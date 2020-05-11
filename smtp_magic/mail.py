@@ -1,9 +1,8 @@
 import time
-from subprocess import Popen
 from smtplib import SMTP_SSL
 from typing import Union
 from smtp_magic.message import Message
-from poplib import POP3_SSL, POP3_SSL_PORT
+import webbrowser
 from imaplib import IMAP4_SSL
 import email
 import re
@@ -37,11 +36,9 @@ class Mail:
     def select(self):
         result , _ = self.imap.select()
         if result.lower() == 'no':
-            p = Popen(f'http://config.mail.163.com/settings/imap/login.jsp?uid={self.address}')
-            p.wait()
-            result, _ = self.imap.select()
-            if result.lower() == 'no':
-                raise Exception(f'Failed opening inbox: {_}')
+            webbrowser.open(f'http://config.mail.163.com/settings/imap/login.jsp?uid={self.address}')
+            print('请先在浏览器中登录来允许imap收信，然后重启程序')
+            exit()
 
     def list_mails(self):
         self.select()

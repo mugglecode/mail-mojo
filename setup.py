@@ -1,9 +1,9 @@
 from setuptools import setup
 
 setup(
-        name='smtp-magic',
+        name='mail-mojo',
         version='0.1.0',
-        packages=['smtp_magic'],
+        packages=['mail_mojo'],
         url='',
         license='GPL',
         author='Kelly',

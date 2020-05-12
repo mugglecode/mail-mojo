@@ -12,6 +12,14 @@ from .recieved_email import Email
 
 class Mail:
     def __init__(self, address: str, pwd: str, server: str, port: Union[int, None], tls: bool = False):
+        """
+        DO NOT INSTANTIATE THIS CLASS UNLESS YOU KNOW YOUR SERVER ADDRESS AND PORT
+        :param address: email address
+        :param pwd: password or access token
+        :param server: server address
+        :param port: server port
+        :param tls: use tls?
+        """
         self.address = address
         self.password = pwd
         self.server = server

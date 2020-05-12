@@ -1,4 +1,4 @@
-from .mail import Mail
+from mail_mojo.mail import Mail
 
 
 class SinaMail(Mail):

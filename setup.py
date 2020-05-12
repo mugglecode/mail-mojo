@@ -8,5 +8,5 @@ setup(
         license='GPL',
         author='Kelly',
         author_email='',
-        description=''
+        description='',
 )

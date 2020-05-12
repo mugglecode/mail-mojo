@@ -1,4 +1,4 @@
-from smtp_magic.mail import Mail
+from mail_mojo.mail import Mail
 
 
 class Mail163(Mail):

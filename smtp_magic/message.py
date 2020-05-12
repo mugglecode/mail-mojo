@@ -13,7 +13,7 @@ class Message:
         self.msg['To'] = Header(to_name)
 
     def add_text(self, text: str):
-        self.msg.attach(MIMEText(text, 'plain', 'utf-8'))
+        self.msg.attach(MIMEText(text + '\n', 'plain', 'utf-8'))
 
     def add_Image(self, path: str, name: str = None):
         with open(path, 'rb') as f:

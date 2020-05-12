@@ -32,6 +32,7 @@ class Mail:
         else:
             self.imap = IMAP4_SSL(server, port)
         self.imap.login(self.address, self.password)
+        self.select()
 
     def select(self):
         result , _ = self.imap.select()
@@ -41,7 +42,6 @@ class Mail:
             exit()
 
     def list_mails(self):
-        self.select()
         return self.imap.search(None, 'ALL')[1][0].split()
 
     def _diff(self, old_list: list, new_list: list):
@@ -77,7 +77,7 @@ class Mail:
             time.sleep(recv_interval)
 
     def _process_header(self, header: str, charset: str):
-        pattern = re.compile(r'^=\?[GBKUTF]{3}[-]?[0-9]?\?[Bb]\?([A-Za-z+=0-9]*)(?=\?=)')
+        pattern = re.compile(r'^\"?=\?' + charset +'\?[Bb]\?([A-Za-z+=0-9]*)(?=\?=)')
         match = pattern.match(header)
         if match is not None:
             return base64.b64decode(match.group(1)).decode(charset)
@@ -88,14 +88,13 @@ class Mail:
         if self.imap is None:
             raise NotImplementedError('IMAP is not initiated')
 
-        self.select()
         result, email_message = self.imap.fetch(mail_num.decode(), '(RFC822)')
 
         email_message = email.message_from_bytes(email_message[0][1])
 
         payload: email.message.Message = email_message.get_payload()[0]
 
-        pattern = re.compile(r'^Content-Type: text/plain;\s*charset=([A-z0-9-]*)', re.RegexFlag.MULTILINE)
+        pattern = re.compile(r'^Content-Type: text/plain;\s*charset=\"?([A-z0-9-]*)\"?', re.RegexFlag.MULTILINE)
         charset = pattern.match(payload.as_string()).group(1)
 
         from_address = self._process_header(email_message['From'], charset)
@@ -104,10 +103,10 @@ class Mail:
 
         str_payload = payload.as_string()
         encoding = payload['Content-Transfer-Encoding'] if payload['Content-Transfer-Encoding'] is not None else 'ascii'
-        pattern = re.compile(r'Content-Type: text/plain;[\s]*charset=[A-Za-z-: 0-9;\n]*(^[A-Za-z+=0-9]*)', flags=re.RegexFlag.MULTILINE)
+        pattern = re.compile(r'Content-Type:\stext/plain;[\s]*charset=\"?[A-Za-z-: 0-9;\n]*\"?\s?(Content-Transfer-Encoding: base64\s*)?\s*(^[A-Za-z+=0-9]*)', flags=re.RegexFlag.MULTILINE)
         str_payload = pattern.match(str_payload)
         try:
-            str_payload = str_payload.group(1)
+            str_payload = str_payload.group(2)
         except Exception:
             str_payload = ''
         if encoding == 'base64':

@@ -1,7 +1,7 @@
 import time
 from smtplib import SMTP_SSL
 from typing import Union
-from smtp_magic.message import Message
+from mail_mojo.message import Message
 import webbrowser
 from imaplib import IMAP4_SSL
 import email

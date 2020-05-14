@@ -45,9 +45,12 @@ class Mail:
     def select(self):
         result , _ = self.imap.select()
         if result.lower() == 'no':
-            webbrowser.open(f'http://config.mail.163.com/settings/imap/login.jsp?uid={self.address}')
-            print('请先在浏览器中登录来允许imap收信，然后重启程序')
-            exit()
+            if self.server == 'imap.163.com':
+                webbrowser.open(f'http://config.mail.163.com/settings/imap/login.jsp?uid={self.address}')
+                print('请先在浏览器中登录来允许imap收信，然后重启程序')
+                exit()
+            else:
+                raise ConnectionError('Fail selecting inbox: ' + _)
 
     def list_mails(self):
         return self.imap.search(None, 'ALL')[1][0].split()

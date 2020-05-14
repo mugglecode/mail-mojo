@@ -72,7 +72,7 @@ class Mail:
         self._mail_list = [*self.list_mails()]
         return
 
-    def wait_for_new_mail(self, recv_interval: int = 3):
+    def wait_for_new_mail(self, recv_interval: int = 3) -> Union[None, Email]:
         """
         stuck until new mail arrived
         :param recv_interval: check frequency in second

@@ -50,7 +50,7 @@ class Mail:
                 print('请先在浏览器中登录来允许imap收信，然后重启程序')
                 exit()
             else:
-                raise ConnectionError('Fail selecting inbox: ' + _)
+                raise ConnectionError(f'Fail selecting inbox: {_}')
 
     def list_mails(self):
         return self.imap.search(None, 'ALL')[1][0].split()

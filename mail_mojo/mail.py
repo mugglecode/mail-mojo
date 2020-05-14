@@ -55,7 +55,10 @@ class Mail:
     def _diff(self, old_list: list, new_list: list):
         result = [*new_list]
         for i in old_list:
-            result.remove(i)
+            try:
+                result.remove(i)
+            except:
+                pass
         return result
 
     def init_wait(self):
@@ -85,7 +88,7 @@ class Mail:
             time.sleep(recv_interval)
 
     def _process_header(self, header: str, charset: str):
-        pattern = re.compile(r'^\"?=\?' + charset +'\?[Bb]\?([A-Za-z+=0-9]*)(?=\?=)')
+        pattern = re.compile(r'^\"?=\?' + charset +'\?[Bb]\?([A-Za-z+=0-9/]*)(?=\?=)')
         match = pattern.match(header)
         if match is not None:
             return base64.b64decode(match.group(1)).decode(charset)
@@ -103,7 +106,11 @@ class Mail:
         payload: email.message.Message = email_message.get_payload()[0]
 
         pattern = re.compile(r'^Content-Type: text/plain;\s*charset=\"?([A-z0-9-]*)\"?', re.RegexFlag.MULTILINE)
-        charset = pattern.match(payload.as_string()).group(1)
+        charset_match = pattern.match(payload.as_string())
+        if charset_match is None:
+            print('Warning: failed to get charset, skipping this mail')
+            return
+        charset = charset_match.group(1)
 
         from_address = self._process_header(email_message['From'], charset)
         to_address = self._process_header(email_message['To'], charset)

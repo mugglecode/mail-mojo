@@ -102,7 +102,8 @@ class Mail:
         if self.imap is None:
             raise NotImplementedError('IMAP is not initiated')
 
-        result, email_message = self.imap.fetch(mail_num.decode(), '(RFC822)')
+        mail_num = mail_num.decode()
+        result, email_message = self.imap.fetch(f'{mail_num}:{mail_num}', '(RFC822)')
 
         email_message = email.message_from_bytes(email_message[0][1])
 

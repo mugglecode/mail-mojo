@@ -90,13 +90,21 @@ class Mail:
                 self.new_mail_queue.extend(new)
             time.sleep(recv_interval)
 
-    def _process_header(self, header: str, charset: str):
-        pattern = re.compile(r'^\"?=\?' + charset +'\?[Bb]\?([A-Za-z+=0-9/]*)(?=\?=)')
+    def _process_header(header: str, charset: str):
+        pattern = re.compile(r'^\"?=\?' + charset +
+                             r'\?[Bb]\?([A-Za-z+=0-9/]*)\?=\"\s+(<.*?>)$')
         match = pattern.match(header)
+
         if match is not None:
-            return base64.b64decode(match.group(1)).decode(charset)
+            return ' '.join([base64.b64decode(match.group(1)).decode(charset), match.group(2)])
         else:
-            return header
+            pattern = re.compile(r'^\"?=\?' + charset +
+                                 r'\?[Bb]\?([A-Za-z+=0-9/]*)(?=\?=)')
+            match = pattern.match(header)
+            if match is not None:
+                return base64.b64decode(match.group(1)).decode(charset)
+            else:
+                return header
 
     def imap_get_mail(self, mail_num: bytes):
         if self.imap is None:

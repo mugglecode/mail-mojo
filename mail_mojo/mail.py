@@ -90,7 +90,7 @@ class Mail:
                 self.new_mail_queue.extend(new)
             time.sleep(recv_interval)
 
-    def _process_header(header: str, charset: str):
+    def _process_header(self, header: str, charset: str):
         pattern = re.compile(r'^\"?=\?' + charset +
                              r'\?[Bb]\?([A-Za-z+=0-9/]*)\?=\"\s+(<.*?>)$')
         match = pattern.match(header)
